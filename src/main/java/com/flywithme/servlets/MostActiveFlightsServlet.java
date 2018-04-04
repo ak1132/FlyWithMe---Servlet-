@@ -52,13 +52,15 @@ public class MostActiveFlightsServlet extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		Collections.sort(activeFlights, new Comparator<MostActiveModel>() {
 
-			public int compare(MostActiveModel o1, MostActiveModel o2) {
-				return Integer.compare(o1.getWorkingDays(), o2.getWorkingDays());
-			}
-		});
-		Collections.reverse(activeFlights);
+		/*
+		 * Collections.sort(activeFlights, (MostActiveModel o1, MostActiveModel o2) -> {
+		 * return Integer.compare(o1.getWorkingDays(), o2.getWorkingDays()); });
+		 */
+
+		// Collections.reverse(activeFlights);
+
+		activeFlights.stream().sorted(Comparator.comparing(MostActiveModel::getWorkingDays).reversed());// Same as above
 
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
