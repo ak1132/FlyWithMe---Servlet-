@@ -54,8 +54,7 @@ public class SearchFlightsServlet extends HttpServlet {
 
 		String origin = request.getParameter("origin");
 		String dest = request.getParameter("dest");
-		String oneway = request.getParameter("oneway");
-		String roundway = request.getParameter("roundway");
+		String type = request.getParameter("rad");
 		String departDate = request.getParameter("depDate");
 		String returnDate = request.getParameter("returnDate");
 		String nos = request.getParameter("nos");
@@ -63,11 +62,17 @@ public class SearchFlightsServlet extends HttpServlet {
 		if (nos == null)
 			nos = "1";
 
-		Date flightDate = null;
+		Date flightDate = null, returnFlightDate = null;
 		SimpleDateFormat availDate = new SimpleDateFormat("yyyy-MM-dd");
 
 		try {
 			flightDate = availDate.parse(departDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			returnFlightDate = availDate.parse(returnDate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -141,7 +146,7 @@ public class SearchFlightsServlet extends HttpServlet {
 			out.println("<center><h5>Search Results for International Booking</h5><br></center><br><br>");
 		}
 
-		if (oneway != null && oneway.equals("oneway")) {
+		if (type != null && type.equals("oneway")) {
 
 			out.println("<center>One way non stop flights</center><br><br>");
 			out.println(
@@ -196,7 +201,7 @@ public class SearchFlightsServlet extends HttpServlet {
 					scheduledArrival = rs.getString("scheduled_arrival");
 					fare = rs.getString("leg_fare");
 
-					double actualFare = getFare(flightDate, Double.parseDouble(fare));
+					double actualFare = getFare(returnFlightDate, Double.parseDouble(fare));
 					out.println("<tr><td>" + airlineName + "</td><td>" + flightId + "</td><td>" + flightlegId
 							+ "</td><td>" + originalAirport + "</td><td>" + scheduledDeparture + "</td><td>"
 							+ destinationAirport + "</td><td>" + scheduledArrival + "</td><td>" + actualFare + "</td>"
@@ -247,6 +252,8 @@ public class SearchFlightsServlet extends HttpServlet {
 					ps.setDate(4, new java.sql.Date(new DateTime(flightDate).minusDays(1).toDate().getTime()));
 					ps.setInt(5, Integer.parseInt(nos));
 					ps.setInt(6, Integer.parseInt(nos));
+					
+					rs = ps.executeQuery();
 
 					if (!rs.isBeforeFirst()) {
 
@@ -257,6 +264,8 @@ public class SearchFlightsServlet extends HttpServlet {
 						ps.setDate(4, new java.sql.Date(new DateTime(flightDate).plusDays(1).toDate().getTime()));
 						ps.setInt(5, Integer.parseInt(nos));
 						ps.setInt(6, Integer.parseInt(nos));
+						
+						rs = ps.executeQuery();
 
 					}
 				}
@@ -313,7 +322,7 @@ public class SearchFlightsServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 			out.println("</tbody></table></body>");
-		} else if (roundway != null && roundway.equals("roundway")) {
+		} else if (type != null && type.equals("roundway")) {
 
 			out.println("<center>One way non stop flights</center><br><br>");
 			out.println(
@@ -325,7 +334,7 @@ public class SearchFlightsServlet extends HttpServlet {
 
 				ps.setString(1, dest);
 				ps.setString(2, origin);
-				ps.setDate(3, new java.sql.Date(flightDate.getTime()));
+				ps.setDate(3, new java.sql.Date(returnFlightDate.getTime()));
 				ps.setInt(4, Integer.parseInt(nos));
 
 				rs = ps.executeQuery();
@@ -334,7 +343,7 @@ public class SearchFlightsServlet extends HttpServlet {
 
 					ps.setString(1, dest);
 					ps.setString(2, origin);
-					ps.setDate(3, new java.sql.Date(new DateTime(flightDate).minusDays(1).toDate().getTime()));
+					ps.setDate(3, new java.sql.Date(new DateTime(returnFlightDate).minusDays(1).toDate().getTime()));
 					ps.setInt(4, Integer.parseInt(nos));
 					rs = ps.executeQuery();
 
@@ -342,7 +351,7 @@ public class SearchFlightsServlet extends HttpServlet {
 
 						ps.setString(1, dest);
 						ps.setString(2, origin);
-						ps.setDate(3, new java.sql.Date(new DateTime(flightDate).plusDays(1).toDate().getTime()));
+						ps.setDate(3, new java.sql.Date(new DateTime(returnFlightDate).plusDays(1).toDate().getTime()));
 						ps.setInt(4, Integer.parseInt(nos));
 						rs = ps.executeQuery();
 
@@ -369,7 +378,7 @@ public class SearchFlightsServlet extends HttpServlet {
 					scheduledArrival = rs.getString("scheduled_arrival");
 					fare = rs.getString("leg_fare");
 
-					double actualFare = getFare(flightDate, Double.parseDouble(fare));
+					double actualFare = getFare(returnFlightDate, Double.parseDouble(fare));
 					out.println("<tr><td>" + airlineName + "</td><td>" + flightId + "</td><td>" + flightlegId
 							+ "</td><td>" + originalAirport + "</td><td>" + scheduledDeparture + "</td><td>"
 							+ destinationAirport + "</td><td>" + scheduledArrival + "</td><td>" + actualFare + "</td>"
@@ -404,8 +413,8 @@ public class SearchFlightsServlet extends HttpServlet {
 				ps = AppConfig.getPreparedStatement(multiLeg);
 				ps.setString(1, dest);
 				ps.setString(2, origin);
-				ps.setDate(3, new java.sql.Date(flightDate.getTime()));
-				ps.setDate(4, new java.sql.Date(flightDate.getTime()));
+				ps.setDate(3, new java.sql.Date(returnFlightDate.getTime()));
+				ps.setDate(4, new java.sql.Date(returnFlightDate.getTime()));
 				ps.setInt(5, Integer.parseInt(nos));
 				ps.setInt(6, Integer.parseInt(nos));
 
@@ -416,20 +425,23 @@ public class SearchFlightsServlet extends HttpServlet {
 					ps = AppConfig.getPreparedStatement(multiLeg);
 					ps.setString(1, dest);
 					ps.setString(2, origin);
-					ps.setDate(3, new java.sql.Date(new DateTime(flightDate).minusDays(1).toDate().getTime()));
-					ps.setDate(4, new java.sql.Date(new DateTime(flightDate).minusDays(1).toDate().getTime()));
+					ps.setDate(3, new java.sql.Date(new DateTime(returnFlightDate).minusDays(1).toDate().getTime()));
+					ps.setDate(4, new java.sql.Date(new DateTime(returnFlightDate).minusDays(1).toDate().getTime()));
 					ps.setInt(5, Integer.parseInt(nos));
 					ps.setInt(6, Integer.parseInt(nos));
+					
+					rs = ps.executeQuery();
 
 					if (!rs.isBeforeFirst()) {
 
 						ps = AppConfig.getPreparedStatement(multiLeg);
 						ps.setString(1, dest);
 						ps.setString(2, origin);
-						ps.setDate(3, new java.sql.Date(new DateTime(flightDate).plusDays(1).toDate().getTime()));
-						ps.setDate(4, new java.sql.Date(new DateTime(flightDate).plusDays(1).toDate().getTime()));
+						ps.setDate(3, new java.sql.Date(new DateTime(returnFlightDate).plusDays(1).toDate().getTime()));
+						ps.setDate(4, new java.sql.Date(new DateTime(returnFlightDate).plusDays(1).toDate().getTime()));
 						ps.setInt(5, Integer.parseInt(nos));
 						ps.setInt(6, Integer.parseInt(nos));
+						rs = ps.executeQuery();
 
 					}
 				}
@@ -468,8 +480,8 @@ public class SearchFlightsServlet extends HttpServlet {
 					destinationArr = rs.getString("destarr");
 					fare2 = rs.getString("fare2");
 
-					double f1 = getFare(flightDate, Double.parseDouble(fare1));
-					double f2 = getFare(flightDate, Double.parseDouble(fare2));
+					double f1 = getFare(returnFlightDate, Double.parseDouble(fare1));
+					double f2 = getFare(returnFlightDate, Double.parseDouble(fare2));
 
 					out.println("<tr><td>" + airlineName + "</td><td>" + ff1Id + "</td><td>" + originalAirport
 							+ "</td><td>" + originStart + "</td><td>" + f1 + "</td><td>" + stops + "</td><td>"
