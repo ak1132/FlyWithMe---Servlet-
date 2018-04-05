@@ -60,7 +60,7 @@
 			clear : 'Clear',
 			close : 'Ok',
 			closeOnSelect : false,
-			format: 'yyyy-mm-dd'
+			format : 'yyyy-mm-dd'
 		});
 
 		$('#currentBookings').click(function() {
@@ -76,10 +76,10 @@
 	});
 
 	function myFunction() {
-		document.getElementById("demo").disabled = false;
+		document.getElementById("returnDate").disabled = false;
 	}
 	function myFunction2() {
-		document.getElementById("demo").disabled = true;
+		document.getElementById("returnDate").disabled = true;
 	}
 </script>
 </head>
@@ -112,7 +112,6 @@
 							Current Bookings</a></li>
 					<li class="tab col s2 " id="allBookings"><a href="#m3">
 							All Bookings</a></li>
-
 					<li class="tab col s2 " id="accountDetails"><a href="#m5">
 							Account </a></li>
 					<li class="tab col s2 " id="bestSeller"><a href="#m6">
@@ -390,14 +389,14 @@
 							<div class="row">
 								<div class="input-field col s6">
 									<p>
-										<input id="oneway" type="radio" name="oneway" value="oneway"
-											checked onchange="myFunction2()" /> <label for="oneway">One
-											way</label>
+										<input id="oneway" type="radio" name="rad" value="oneway"
+											class="with-gap" checked onchange="myFunction2()" /> <label
+											for="oneway">One way</label>
 									</p>
 								</div>
 								<div class="input-field col s6">
 									<p>
-										<input id="roundway" type="radio" name="roundway"
+										<input id="roundway" type="radio" name="rad" class="with-gap"
 											value="roundway" onchange="myFunction()" /> <label
 											for="roundway">Round way</label>
 									</p>

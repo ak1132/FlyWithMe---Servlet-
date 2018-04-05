@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -59,7 +58,7 @@ public class MostActiveFlightsServlet extends HttpServlet {
 		 */
 
 		// Collections.reverse(activeFlights);
-
+		
 		activeFlights.stream().sorted(Comparator.comparing(MostActiveModel::getWorkingDays).reversed());// Same as above
 
 		response.setContentType("text/html");

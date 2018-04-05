@@ -17,7 +17,7 @@ public class ShowSchedule extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
+
 		String res = (String) request.getParameter("reservationButton");
 		Integer reservation_id = Integer.parseInt(res);
 		ResultSet rs;

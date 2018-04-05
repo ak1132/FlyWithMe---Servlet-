@@ -149,7 +149,7 @@ public class SearchFlightsServlet extends HttpServlet {
 							+ "<td>Departure Time</td><td>Destination</td><td>Arrival Time</td><td>Fare</td></tr></thead><tbody>");
 
 			try {
-
+				rs.close();
 				ps.setString(1, origin);
 				ps.setString(2, dest);
 				ps.setDate(3, new java.sql.Date(flightDate.getTime()));
@@ -264,14 +264,17 @@ public class SearchFlightsServlet extends HttpServlet {
 				if (!rs.isBeforeFirst()) {
 					out.println("<br><br><center>No Search Results found</center><br><br>");
 				}
-				
-				/*"select aa1.airline_id as aa1air, aa2.airline_id as aa2air, aa1.airline_name, f1.flight_id as ff1Id,"
-				+ "a1.airport_name as origin,"
-				+ " f1.scheduled_departure as originstart, f1.flightleg_id as f1Id, f2.flightleg_id as f2Id,"
-				+ "f1.leg_fare as fare1,a3.airport_name as stops,aa2.airline_name as leg2Airline, f2.flight_id as leg2Flight,"
-				+ " f1.scheduled_arrival as stoparrive, "
-				+ "f2.scheduled_departure as stopstart, a2.airport_name as destination,f2.scheduled_arrival as destarr ,\r\n"
-				+ "f2.leg_fare as fare2\r\n" + "from flightleg f1\r\n"*/
+
+				/*
+				 * "select aa1.airline_id as aa1air, aa2.airline_id as aa2air, aa1.airline_name, f1.flight_id as ff1Id,"
+				 * + "a1.airport_name as origin," +
+				 * " f1.scheduled_departure as originstart, f1.flightleg_id as f1Id, f2.flightleg_id as f2Id,"
+				 * +
+				 * "f1.leg_fare as fare1,a3.airport_name as stops,aa2.airline_name as leg2Airline, f2.flight_id as leg2Flight,"
+				 * + " f1.scheduled_arrival as stoparrive, " +
+				 * "f2.scheduled_departure as stopstart, a2.airport_name as destination,f2.scheduled_arrival as destarr ,\r\n"
+				 * + "f2.leg_fare as fare2\r\n" + "from flightleg f1\r\n"
+				 */
 
 				while (rs.next()) {
 					aa1Id = rs.getString("aa1air");
@@ -291,19 +294,19 @@ public class SearchFlightsServlet extends HttpServlet {
 					destinationAirport = rs.getString("destination");
 					destinationArr = rs.getString("destarr");
 					fare2 = rs.getString("fare2");
-					
-					double f1 =getFare(flightDate, Double.parseDouble(fare1));
-					double f2 =getFare(flightDate, Double.parseDouble(fare2));
+
+					double f1 = getFare(flightDate, Double.parseDouble(fare1));
+					double f2 = getFare(flightDate, Double.parseDouble(fare2));
 
 					out.println("<tr><td>" + airlineName + "</td><td>" + ff1Id + "</td><td>" + originalAirport
-							+ "</td><td>" + originStart + "</td><td>" + f1
-							+ "</td><td>" + stops + "</td><td>" + leg2Airline + "</td><td>" + leg2Flight + "</td><td>"
-							+ stopArrival + "</td><td>" + stopStart + "</td><td>" + destinationAirport + "</td><td>"
-							+ destinationArr + "</td><td>" + f2 + "</td>"
+							+ "</td><td>" + originStart + "</td><td>" + f1 + "</td><td>" + stops + "</td><td>"
+							+ leg2Airline + "</td><td>" + leg2Flight + "</td><td>" + stopArrival + "</td><td>"
+							+ stopStart + "</td><td>" + destinationAirport + "</td><td>" + destinationArr + "</td><td>"
+							+ f2 + "</td>"
 							+ "<td><form method='POST' action='bookOrder'><button type='submit' name='book' "
 							+ "id='book' class=\"waves-effect waves-light btn\" value='" + "2," + aa1Id + "," + ff1Id
-							+ ","+f1Id+"," + aa2Id + "," + leg2Flight + "," + f2Id + "," + departDate + "," + f1 + "," + f2
-							+ "," + nos + "'>Book</button></form></td></tr>");
+							+ "," + f1Id + "," + aa2Id + "," + leg2Flight + "," + f2Id + "," + departDate + "," + f1
+							+ "," + f2 + "," + nos + "'>Book</button></form></td></tr>");
 				}
 
 			} catch (SQLException e) {
@@ -312,8 +315,179 @@ public class SearchFlightsServlet extends HttpServlet {
 			out.println("</tbody></table></body>");
 		} else if (roundway != null && roundway.equals("roundway")) {
 
+			out.println("<center>One way non stop flights</center><br><br>");
+			out.println(
+					"<table class=\"striped\"><thead><tr><td>Airline</td><td>Flight</td><td>FlightLeg</td><td>Origin</td>"
+							+ "<td>Departure Time</td><td>Destination</td><td>Arrival Time</td><td>Fare</td></tr></thead><tbody>");
+
+			try {
+				rs.close();
+
+				ps.setString(1, dest);
+				ps.setString(2, origin);
+				ps.setDate(3, new java.sql.Date(flightDate.getTime()));
+				ps.setInt(4, Integer.parseInt(nos));
+
+				rs = ps.executeQuery();
+
+				if (!rs.isBeforeFirst()) {
+
+					ps.setString(1, dest);
+					ps.setString(2, origin);
+					ps.setDate(3, new java.sql.Date(new DateTime(flightDate).minusDays(1).toDate().getTime()));
+					ps.setInt(4, Integer.parseInt(nos));
+					rs = ps.executeQuery();
+
+					if (!rs.isBeforeFirst()) {
+
+						ps.setString(1, dest);
+						ps.setString(2, origin);
+						ps.setDate(3, new java.sql.Date(new DateTime(flightDate).plusDays(1).toDate().getTime()));
+						ps.setInt(4, Integer.parseInt(nos));
+						rs = ps.executeQuery();
+
+					}
+				}
+
+				if (!rs.isBeforeFirst()) {
+					out.println("<br><br><center>No Search Results found</center><br><br>");
+				}
+
+				/*
+				 * "select a.airline_name, f.flight_id,f.flightleg_id,a1.airport_name as origin, "
+				 * +
+				 * "f.scheduled_departure, a2.airport_name as dest, f.scheduled_arrival,f.leg_fare "
+				 */
+				while (rs.next()) {
+					aId = rs.getString("airline_id");
+					airlineName = rs.getString("airline_name");
+					flightId = rs.getString("flight_id");
+					flightlegId = rs.getString("flightleg_id");
+					originalAirport = rs.getString("origin");
+					scheduledDeparture = rs.getString("scheduled_departure");
+					destinationAirport = rs.getString("dest");
+					scheduledArrival = rs.getString("scheduled_arrival");
+					fare = rs.getString("leg_fare");
+
+					double actualFare = getFare(flightDate, Double.parseDouble(fare));
+					out.println("<tr><td>" + airlineName + "</td><td>" + flightId + "</td><td>" + flightlegId
+							+ "</td><td>" + originalAirport + "</td><td>" + scheduledDeparture + "</td><td>"
+							+ destinationAirport + "</td><td>" + scheduledArrival + "</td><td>" + actualFare + "</td>"
+							+ "<td><form method='POST' action='bookOrder'><button type='submit' name='book' "
+							+ "id='book' class=\"waves-effect waves-light btn\" value='" + "1," + aId + "," + flightId
+							+ "," + flightlegId + "," + actualFare + "," + departDate + "," + nos
+							+ "'>Book</button></form></td></tr>");
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			out.println("</tbody></table><br>");
+			out.println("<center>One way multileg flights</center><br><br>");
+			out.println(
+					"<table class=\"striped\"><thead><tr><td>Airline</td><td>FlightID</td><td>Origin</td><td>Start</td><td>Fare1</td>"
+							+ "<td>Stops</td><td>Airline2</td><td>FlightLeg2</td><td>Stop Arrive</td><td>Stop Start</td>"
+							+ "<td>Destination</td><td>Dest Arrival</td><td>Fare 2</td></tr></thead><tbody>");
+
+			/*
+			 * "select aa1.airline_id as aa1air, aa2.airline_id as aa2air, aa1.airline_name, f1.flight_id as ff1Id,"
+			 * + "a1.airport_name as origin," +
+			 * " f1.scheduled_departure as originstart, f1.flightleg_id as f1Id, f2.flightleg_id as f2Id,"
+			 * +
+			 * "f1.leg_fare as fare1,a3.airport_name as stops,aa2.airline_name as leg2Airline, f2.flight_id as leg2Flight,"
+			 * + " f1.scheduled_arrival as stoparrive, " +
+			 * "f2.scheduled_departure as stopstart, a2.airport_name as destination,f2.scheduled_arrival as destarr ,\r\n"
+			 * + "f2.leg_fare as fare2\r\n" + "from flightleg f1\r\n"
+			 */
+
+			try {
+				ps = AppConfig.getPreparedStatement(multiLeg);
+				ps.setString(1, dest);
+				ps.setString(2, origin);
+				ps.setDate(3, new java.sql.Date(flightDate.getTime()));
+				ps.setDate(4, new java.sql.Date(flightDate.getTime()));
+				ps.setInt(5, Integer.parseInt(nos));
+				ps.setInt(6, Integer.parseInt(nos));
+
+				rs = ps.executeQuery();
+
+				if (!rs.isBeforeFirst()) {
+
+					ps = AppConfig.getPreparedStatement(multiLeg);
+					ps.setString(1, dest);
+					ps.setString(2, origin);
+					ps.setDate(3, new java.sql.Date(new DateTime(flightDate).minusDays(1).toDate().getTime()));
+					ps.setDate(4, new java.sql.Date(new DateTime(flightDate).minusDays(1).toDate().getTime()));
+					ps.setInt(5, Integer.parseInt(nos));
+					ps.setInt(6, Integer.parseInt(nos));
+
+					if (!rs.isBeforeFirst()) {
+
+						ps = AppConfig.getPreparedStatement(multiLeg);
+						ps.setString(1, dest);
+						ps.setString(2, origin);
+						ps.setDate(3, new java.sql.Date(new DateTime(flightDate).plusDays(1).toDate().getTime()));
+						ps.setDate(4, new java.sql.Date(new DateTime(flightDate).plusDays(1).toDate().getTime()));
+						ps.setInt(5, Integer.parseInt(nos));
+						ps.setInt(6, Integer.parseInt(nos));
+
+					}
+				}
+
+				if (!rs.isBeforeFirst()) {
+					out.println("<br><br><center>No Search Results found</center><br><br>");
+				}
+
+				/*
+				 * "select aa1.airline_id as aa1air, aa2.airline_id as aa2air, aa1.airline_name, f1.flight_id as ff1Id,"
+				 * + "a1.airport_name as origin," +
+				 * " f1.scheduled_departure as originstart, f1.flightleg_id as f1Id, f2.flightleg_id as f2Id,"
+				 * +
+				 * "f1.leg_fare as fare1,a3.airport_name as stops,aa2.airline_name as leg2Airline, f2.flight_id as leg2Flight,"
+				 * + " f1.scheduled_arrival as stoparrive, " +
+				 * "f2.scheduled_departure as stopstart, a2.airport_name as destination,f2.scheduled_arrival as destarr ,\r\n"
+				 * + "f2.leg_fare as fare2\r\n" + "from flightleg f1\r\n"
+				 */
+
+				while (rs.next()) {
+					aa1Id = rs.getString("aa1air");
+					aa2Id = rs.getString("aa2air");
+					f1Id = rs.getString("f1Id");
+					f2Id = rs.getString("f2Id");
+					airlineName = rs.getString("airline_name");
+					ff1Id = rs.getString("ff1Id");
+					originalAirport = rs.getString("origin");
+					originStart = rs.getString("originstart");
+					fare1 = rs.getString("fare1");
+					stops = rs.getString("stops");
+					leg2Airline = rs.getString("leg2Airline");
+					leg2Flight = rs.getString("leg2Flight");
+					stopArrival = rs.getString("stoparrive");
+					stopStart = rs.getString("stopstart");
+					destinationAirport = rs.getString("destination");
+					destinationArr = rs.getString("destarr");
+					fare2 = rs.getString("fare2");
+
+					double f1 = getFare(flightDate, Double.parseDouble(fare1));
+					double f2 = getFare(flightDate, Double.parseDouble(fare2));
+
+					out.println("<tr><td>" + airlineName + "</td><td>" + ff1Id + "</td><td>" + originalAirport
+							+ "</td><td>" + originStart + "</td><td>" + f1 + "</td><td>" + stops + "</td><td>"
+							+ leg2Airline + "</td><td>" + leg2Flight + "</td><td>" + stopArrival + "</td><td>"
+							+ stopStart + "</td><td>" + destinationAirport + "</td><td>" + destinationArr + "</td><td>"
+							+ f2 + "</td>"
+							+ "<td><form method='POST' action='bookOrder'><button type='submit' name='book' "
+							+ "id='book' class=\"waves-effect waves-light btn\" value='" + "2," + aa1Id + "," + ff1Id
+							+ "," + f1Id + "," + aa2Id + "," + leg2Flight + "," + f2Id + "," + departDate + "," + f1
+							+ "," + f2 + "," + nos + "'>Book</button></form></td></tr>");
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			out.println("</tbody></table></body>");
 		}
-		// out.println("</tbody></table></body>");
+
 		out.println("</body>");
 		out.println("</html>");
 	}
