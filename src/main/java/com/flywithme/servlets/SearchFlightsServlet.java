@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.joda.time.DateTime;
 
@@ -146,7 +147,7 @@ public class SearchFlightsServlet extends HttpServlet {
 			out.println("<center><h5>Search Results for International Booking</h5><br></center><br><br>");
 		}
 
-		if (type != null && type.equals("oneway")) {
+		if (type != null && (type.equals("oneway") || type.equals("roundway"))) {
 
 			out.println("<center>One way non stop flights</center><br><br>");
 			out.println(
@@ -252,7 +253,7 @@ public class SearchFlightsServlet extends HttpServlet {
 					ps.setDate(4, new java.sql.Date(new DateTime(flightDate).minusDays(1).toDate().getTime()));
 					ps.setInt(5, Integer.parseInt(nos));
 					ps.setInt(6, Integer.parseInt(nos));
-					
+
 					rs = ps.executeQuery();
 
 					if (!rs.isBeforeFirst()) {
@@ -264,7 +265,7 @@ public class SearchFlightsServlet extends HttpServlet {
 						ps.setDate(4, new java.sql.Date(new DateTime(flightDate).plusDays(1).toDate().getTime()));
 						ps.setInt(5, Integer.parseInt(nos));
 						ps.setInt(6, Integer.parseInt(nos));
-						
+
 						rs = ps.executeQuery();
 
 					}
@@ -322,9 +323,10 @@ public class SearchFlightsServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 			out.println("</tbody></table></body>");
-		} else if (type != null && type.equals("roundway")) {
+		}
+		if (type != null && type.equals("roundway")) {
 
-			out.println("<center>One way non stop flights</center><br><br>");
+			out.println("<center>Return non stop flights</center><br><br>");
 			out.println(
 					"<table class=\"striped\"><thead><tr><td>Airline</td><td>Flight</td><td>FlightLeg</td><td>Origin</td>"
 							+ "<td>Departure Time</td><td>Destination</td><td>Arrival Time</td><td>Fare</td></tr></thead><tbody>");
@@ -384,7 +386,7 @@ public class SearchFlightsServlet extends HttpServlet {
 							+ destinationAirport + "</td><td>" + scheduledArrival + "</td><td>" + actualFare + "</td>"
 							+ "<td><form method='POST' action='bookOrder'><button type='submit' name='book' "
 							+ "id='book' class=\"waves-effect waves-light btn\" value='" + "1," + aId + "," + flightId
-							+ "," + flightlegId + "," + actualFare + "," + departDate + "," + nos
+							+ "," + flightlegId + "," + actualFare + "," + returnFlightDate + "," + nos
 							+ "'>Book</button></form></td></tr>");
 				}
 
@@ -392,7 +394,7 @@ public class SearchFlightsServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 			out.println("</tbody></table><br>");
-			out.println("<center>One way multileg flights</center><br><br>");
+			out.println("<center>Return multileg flights</center><br><br>");
 			out.println(
 					"<table class=\"striped\"><thead><tr><td>Airline</td><td>FlightID</td><td>Origin</td><td>Start</td><td>Fare1</td>"
 							+ "<td>Stops</td><td>Airline2</td><td>FlightLeg2</td><td>Stop Arrive</td><td>Stop Start</td>"
@@ -429,7 +431,7 @@ public class SearchFlightsServlet extends HttpServlet {
 					ps.setDate(4, new java.sql.Date(new DateTime(returnFlightDate).minusDays(1).toDate().getTime()));
 					ps.setInt(5, Integer.parseInt(nos));
 					ps.setInt(6, Integer.parseInt(nos));
-					
+
 					rs = ps.executeQuery();
 
 					if (!rs.isBeforeFirst()) {
@@ -490,8 +492,15 @@ public class SearchFlightsServlet extends HttpServlet {
 							+ f2 + "</td>"
 							+ "<td><form method='POST' action='bookOrder'><button type='submit' name='book' "
 							+ "id='book' class=\"waves-effect waves-light btn\" value='" + "2," + aa1Id + "," + ff1Id
-							+ "," + f1Id + "," + aa2Id + "," + leg2Flight + "," + f2Id + "," + departDate + "," + f1
+							+ "," + f1Id + "," + aa2Id + "," + leg2Flight + "," + f2Id + "," + returnFlightDate + "," + f1
 							+ "," + f2 + "," + nos + "'>Book</button></form></td></tr>");
+
+					HttpSession session = request.getSession();
+					session.setAttribute("dest", dest);
+					session.setAttribute("origin", origin);
+					session.setAttribute("flightDate", new java.sql.Date(returnFlightDate.getTime()));
+					session.setAttribute("nos", nos);
+
 				}
 
 			} catch (SQLException e) {
