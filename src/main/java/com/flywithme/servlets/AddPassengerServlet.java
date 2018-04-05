@@ -241,13 +241,14 @@ public class AddPassengerServlet extends HttpServlet {
 
 						double actualFare = getFare(returnFlightDate, Double.parseDouble(fare));
 						out.println("<tr><td>" + airlineName + "</td><td>" + flightId + "</td><td>" + flightlegId
-								+ "</td><td>" + originalAirport + "</td><td>" + scheduledDeparture + "</td><td>"
-								+ destinationAirport + "</td><td>" + scheduledArrival + "</td><td>" + actualFare
-								+ "</td>"
+								+ "</td><td>" + originalAirport + "</td><td>" + scheduledDeparture + "<br><span>"
+								+ returnFlightDate + "</span></td><td>" + destinationAirport + "</td><td>"
+								+ scheduledArrival + "</td><td>" + actualFare + "</td>"
 								+ "<td><form method='POST' action='bookOrder'><button type='submit' name='book' "
 								+ "id='book' class=\"waves-effect waves-light btn\" value='" + "1," + aId + ","
 								+ flightId + "," + flightlegId + "," + actualFare + "," + returnFlightDate + "," + nos
 								+ "'>Book</button></form></td></tr>");
+
 					}
 
 				} catch (SQLException e) {
@@ -350,14 +351,15 @@ public class AddPassengerServlet extends HttpServlet {
 						double f2 = getFare(returnFlightDate, Double.parseDouble(fare2));
 
 						out.println("<tr><td>" + airlineName + "</td><td>" + ff1Id + "</td><td>" + originalAirport
-								+ "</td><td>" + originStart + "</td><td>" + f1 + "</td><td>" + stops + "</td><td>"
-								+ leg2Airline + "</td><td>" + leg2Flight + "</td><td>" + stopArrival + "</td><td>"
-								+ stopStart + "</td><td>" + destinationAirport + "</td><td>" + destinationArr
-								+ "</td><td>" + f2 + "</td>"
+								+ "</td><td>" + originStart + "</td><td>" + f1 + "</td><td>" + stops + "<br><span>"
+								+ returnFlightDate + "</span></td><td>" + leg2Airline + "</td><td>" + leg2Flight
+								+ "</td><td>" + stopArrival + "</td><td>" + stopStart + "</td><td>" + destinationAirport
+								+ "</td><td>" + destinationArr + "</td><td>" + f2 + "</td>"
 								+ "<td><form method='POST' action='bookOrder'><button type='submit' name='book' "
 								+ "id='book' class=\"waves-effect waves-light btn\" value='" + "2," + aa1Id + ","
-								+ ff1Id + "," + f1Id + "," + aa2Id + "," + leg2Flight + "," + f2Id + "," + returnFlightDate
-								+ "," + f1 + "," + f2 + "," + nos + "'>Book</button></form></td></tr>");
+								+ ff1Id + "," + f1Id + "," + aa2Id + "," + leg2Flight + "," + f2Id + ","
+								+ returnFlightDate + "," + f1 + "," + f2 + "," + nos
+								+ "'>Book</button></form></td></tr>");
 					}
 
 				} catch (SQLException e) {
