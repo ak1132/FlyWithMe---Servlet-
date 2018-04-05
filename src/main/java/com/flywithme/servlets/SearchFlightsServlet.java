@@ -72,10 +72,12 @@ public class SearchFlightsServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		try {
-			returnFlightDate = availDate.parse(returnDate);
-		} catch (ParseException e) {
-			e.printStackTrace();
+		if (returnDate != null) {
+			try {
+				returnFlightDate = availDate.parse(returnDate);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 		}
 
 		String nonStop = "select a.airline_id,a.airline_name, f.flight_id,f.flightleg_id,a1.airport_name as origin, "
@@ -202,7 +204,7 @@ public class SearchFlightsServlet extends HttpServlet {
 					scheduledArrival = rs.getString("scheduled_arrival");
 					fare = rs.getString("leg_fare");
 
-					double actualFare = getFare(returnFlightDate, Double.parseDouble(fare));
+					double actualFare = getFare(flightDate, Double.parseDouble(fare));
 					out.println("<tr><td>" + airlineName + "</td><td>" + flightId + "</td><td>" + flightlegId
 							+ "</td><td>" + originalAirport + "</td><td>" + scheduledDeparture + "</td><td>"
 							+ destinationAirport + "</td><td>" + scheduledArrival + "</td><td>" + actualFare + "</td>"
@@ -492,14 +494,8 @@ public class SearchFlightsServlet extends HttpServlet {
 							+ f2 + "</td>"
 							+ "<td><form method='POST' action='bookOrder'><button type='submit' name='book' "
 							+ "id='book' class=\"waves-effect waves-light btn\" value='" + "2," + aa1Id + "," + ff1Id
-							+ "," + f1Id + "," + aa2Id + "," + leg2Flight + "," + f2Id + "," + returnFlightDate + "," + f1
-							+ "," + f2 + "," + nos + "'>Book</button></form></td></tr>");
-
-					HttpSession session = request.getSession();
-					session.setAttribute("dest", dest);
-					session.setAttribute("origin", origin);
-					session.setAttribute("flightDate", new java.sql.Date(returnFlightDate.getTime()));
-					session.setAttribute("nos", nos);
+							+ "," + f1Id + "," + aa2Id + "," + leg2Flight + "," + f2Id + "," + returnFlightDate + ","
+							+ f1 + "," + f2 + "," + nos + "'>Book</button></form></td></tr>");
 
 				}
 
