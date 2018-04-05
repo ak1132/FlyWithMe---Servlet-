@@ -257,7 +257,8 @@
 
 								</select> <label>Destination</label> <select id="dest" name="dest"
 									class="browser-default">
-
+									<option value="JFK">John F. Kennedy International New
+										York United States of America</option>
 									<option value="2997">Chhatrapati Shivaji International
 										Airport Mumbai India</option>
 									<option value="2998">Bilaspur Airport Bilaspur India</option>
@@ -369,8 +370,6 @@
 										Atlanta United States of America</option>
 									<option value="IVI">Ivato International Antananarivo
 										Madagascar</option>
-									<option value="JFK">John F. Kennedy International New
-										York United States of America</option>
 									<option value="LAI">Los Angeles International Los
 										Angeles United States of America</option>
 									<option value="LGA">LaGuardia New York United States
