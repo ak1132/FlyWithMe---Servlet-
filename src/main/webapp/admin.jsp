@@ -88,8 +88,10 @@
 					clearAddCustFields();
 				}
 			});
-		});
-		
+		});	
+	});
+	
+	$(document).ready(function(){
 		$('#editButton').click(function() {
 			var editemailid = $('#editemailid').val();
 			$.ajax({
@@ -108,10 +110,10 @@
 					var cno = Number("<%=session.getAttribute("contactNo")%>");
 					var cred = Number("<%=session.getAttribute("creditCardNo")%>");
 					setEditForm(fname,lname, add,zip, cno,cred);
-														}
-													});
-										});
-					});
+				}
+				});
+			});
+	});
 </script>
 <style>
 body {

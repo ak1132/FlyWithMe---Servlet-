@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.flywithme.app.AppConfig;
+import com.flywithme.app.EmailService;
 
 /**
  * Servlet implementation class AddCustomerServlet
@@ -22,7 +23,7 @@ public class AddCustomerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String insertUser = "insert into user values(?,?,?,?,?,?)";
 	private static final String insertCust = "insert into customer values(?,?,?,?,?,?,?,?)";
-
+	private boolean registrationSuccess = true;
 	public AddCustomerServlet() {
 		super();
 	}
@@ -81,6 +82,13 @@ public class AddCustomerServlet extends HttpServlet {
 
 		} catch (SQLException e1) {
 			e1.printStackTrace();
+			registrationSuccess = false;
+		}
+		
+		if (registrationSuccess) {
+			EmailService.sendEmail(email, "Successful Registration in FlyWithMe", "Welcome " + firstName
+					+ ",\n\nCongratulations on your successful registration.\n Now enjoy the latest offers and cheapest flights on FLyWithme.",
+					"cs539check@gmail.com", "cs539check@gmail.com", "Checkingcs539");
 		}
 
 		response.setContentType("text/plain");

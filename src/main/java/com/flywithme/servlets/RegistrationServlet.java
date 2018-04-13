@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.flywithme.app.AppConfig;
+import com.flywithme.app.EmailService;
 
 public class RegistrationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -82,12 +83,11 @@ public class RegistrationServlet extends HttpServlet {
 			registrationSuccess = false;
 		}
 
-		/*
-		 * if (registrationSuccess) { EmailService.sendEmail(email,
-		 * "Successful Registration in FlyWithMe", "Welcome " + firstName +
-		 * ",\n\nCongratulations on your successful registration.\n Now enjoy the latest offers and cheapest flights on FLyWithme."
-		 * , "abc@gmail.com", "user1", "******"); }
-		 */
+		if (registrationSuccess) {
+			EmailService.sendEmail(email, "Successful Registration in FlyWithMe", "Welcome " + firstName
+					+ ",\n\nCongratulations on your successful registration.\n Now enjoy the latest offers and cheapest flights on FLyWithme.",
+					"cs539check@gmail.com", "cs539check@gmail.com", "Checkingcs539");
+		}
 
 		request.getRequestDispatcher("index.jsp").include(request, response);
 	}
