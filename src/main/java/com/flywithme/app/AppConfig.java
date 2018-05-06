@@ -11,8 +11,8 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 public class AppConfig {
 
 	private static final String HOSTNAME = "jdbc:mysql://dbms1.ckz0sfiltvup.us-east-2.rds.amazonaws.com:3306/flywithme";
-	private static final String USERNAME = "shubham";
-	private static final String PASSWORD = "bitan1994";
+	private static final String USERNAME = "";
+	private static final String PASSWORD = "";
 
 	private static Statement st = null;
 	private static java.sql.PreparedStatement ps = null;
